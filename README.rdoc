@@ -28,6 +28,11 @@ Configure devise_traceable inside your app (and warden and devise if you weren't
     devise :database_authenticatable, ..... , :traceable
   end
 
+== Patch Details
+
+  only one method modiified here lib/devise_traceable/model.rb & lib/devise_traceable/hooks/traceable.rb
+  quick and dirty fix to to track user logins and logouts and for sti User model
+
 == Copyright
 
 Copyright (c) 2010 mobiThought. See LICENSE for details.

@@ -5,12 +5,29 @@ module Devise
     # Trace information about your user sign in. It tracks the following columns:
 
     # * resource_id
-    # * sign_in_at
-    
+    # * at
+    # * ip
+    # * action
+
     module Traceable
-      def stamp!
-        new_current = Time.now
-        "#{self.class}Tracing".constantize.create(:sign_in_at => self.current_sign_in_at, "#{self.class}".foreign_key.to_sym => self.id)
+      # quick and dirty fix
+      # method modified to store user logins and logouts without sti details
+      # assume thats device use only user and inherited classes
+
+      def stamp_sign_in!
+        sign_time = self.current_sign_in_at || Time.now.utc
+        'UserTracing'.constantize.create(:at => sign_time,
+                                         :user_id => self.id,
+                                         :ip => self.current_sign_in_ip,
+                                         :action => :sign_in)
+      end
+
+      def stamp_sign_out!(request = nil)
+        ip = request.remote_ip if request
+        'UserTracing'.constantize.create(:at => Time.now.utc,
+                                         :user_id => self.id,
+                                         :ip => ip,
+                                         :action => :sign_out)
       end
     end
   end
